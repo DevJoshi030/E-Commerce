@@ -15,6 +15,15 @@ f = open("admin_uri.json", 'r')
 srv = json.loads(f.read())
 client = pymongo.MongoClient(srv['uri'])
 
+# Constants
+DB_NAME = 'Cheeklu-Gifts'
+COLLECTION_NAME = 'Users'
+
+# DB and Collection
+
+db = client[DB_NAME]
+collection = db[COLLECTION_NAME]
+
 # API Views
 
 
@@ -36,10 +45,6 @@ class AddUser(APIView):
         password = serializer.validated_data.get('password')
 
         password = make_password(password)
-
-        db = client['Test']
-
-        collection = db['users']
 
         collection.insert_one({
             'name': name,
@@ -65,10 +70,6 @@ class LoginUser(APIView):
 
         user_id = serializer.validated_data.get('user_id')
         password = serializer.validated_data.get('password')
-
-        db = client['Test']
-
-        collection = db['users']
 
         user = collection.find_one({
             "user_id": user_id

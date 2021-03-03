@@ -1,5 +1,5 @@
-from ..serializers.product_serializers import AddProductSerializer, \
-    GetProductSerializer
+from ..serializers.tshirt_serializers import AddTShirtSerializer, \
+    GetTShirtSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,7 +14,7 @@ client = pymongo.MongoClient(srv['uri'])
 
 # Constants
 DB_NAME = 'Cheeklu-Gifts'
-COLLECTION_NAME = 'Products'
+COLLECTION_NAME = 'TShirts'
 
 # DB and Collection
 
@@ -24,9 +24,9 @@ collection = db[COLLECTION_NAME]
 # API Views
 
 
-class AddProduct(APIView):
+class AddTShirt(APIView):
 
-    serializer_class = AddProductSerializer
+    serializer_class = AddTShirtSerializer
 
     def post(self, request, format=None):
 
@@ -38,19 +38,27 @@ class AddProduct(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         name = serializer.validated_data.get('name')
+        price = serializer.validated_data.get('price')
+        description = serializer.validated_data.get('description')
+        quantity = serializer.validated_data.get('quantity')
+        size = serializer.validated_data.get('size')
         details = serializer.validated_data.get('details')
 
         collection.insert_one({
             "name": name,
+            "price": price,
+            "description": description,
+            "quantity": quantity,
+            "size": size,
             "details": details
         })
 
         return Response({"Success": "Done"}, status=status.HTTP_200_OK)
 
 
-class GetProduct(APIView):
+class GetTShirt(APIView):
 
-    serializer_class = GetProductSerializer
+    serializer_class = GetTShirtSerializer
 
     def get(self, request, format=None, **kwargs):
 
@@ -58,4 +66,4 @@ class GetProduct(APIView):
 
         data = self.serializer_class(collection.find_one({"name": name})).data
 
-        return Response({"Success": data}, status=status.HTTP_200_OK)
+        return Response({"Data": data}, status=status.HTTP_200_OK)
